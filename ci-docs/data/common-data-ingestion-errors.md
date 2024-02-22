@@ -111,25 +111,23 @@ The datetime fields in the table aren't in ISO 8601 or en-US formats. The defaul
 
 ## Common reasons for ingestion errors or corrupt data with Power Query
 
-### Data type does not match data
+### Date Time values are not parsed correctly
 
-The most common data type mismatch occurs when a date field isn't set to the correct date format.
+The most common data type mismatch occurs when a date field isn't set to the correct date format. This can be caused by either (a) source data are not formatted correctly OR (b) Incorrect locale is used to parse the data during the ingestion.
+To fix first issue, the data can be fixed at the source and re-ingested. For latter problem, locale can be adjusted in the Power Query transformations. Here is an example:
 
-The data can be fixed at the source and re-ingested. Or fix the transformation within Customer Insights - Data. To fix the transformation:
+Source Data in CSV Format:
 
-1. Go to **Data** > **Data sources**.
+In this case, source data are formatted as “MM/DD/YYY” such as English (United States) while the default locale used to parse the data during ingestion used “DD/MM/YYY” such as English(United Kingdom) causing the Dec 8th,2023 to be ingested as “Aug 12th,2023”.  
 
-1. Next to the data source with the corrupted data, select **Edit**.
+To fix this issue, ensure to Change type of all date time fields to use correct Locale using Change Type.
 
-1. Select **Next**.
+### Symptoms of this issue:
+ - When the source data can't be parsed by the locale used then Ingestion failure may occur. Ex: 29/08/2023 is parsed with MM/dd/yyyy, it fails as it can't parse month from 29
+ - When the data are parsed successfully using incorrect locale then the date time values become incorrect. Ex: Dec 8th,2023 to be ingested as “Aug 12th,2023”
 
-1. Select each of the queries and look for transformations applied inside "Applied Steps" that's incorrect, or date columns that haven't been transformed with a date format.
 
-   :::image type="content" source="media/PQ_corruped_date.png" alt-text="Power Query - Edit showing incorrect date format":::
-
-1. Change the data type to correctly match the data.
-
-1. Select **Save**. That data source is refreshed.
+Reference - https://learn.microsoft.com/en-us/power-query/data-types#document-or-project-locale
 
 > [!TIP]
 > For troubleshooting information, go to [Microsoft Dynamics 365 Customer Insights troubleshooting](/troubleshoot/dynamics-365/customer-insights/welcome-customer-insights).
